@@ -1,0 +1,547 @@
+[
+    {
+        "id": "529bb9f9aacfeeed",
+        "type": "tab",
+        "label": "Flow 4",
+        "disabled": false,
+        "info": "",
+        "env": []
+    },
+    {
+        "id": "mqtt_input",
+        "type": "mqtt in",
+        "z": "529bb9f9aacfeeed",
+        "name": "MQTT Input - Sensor Data",
+        "topic": "esp32/sensors",
+        "broker": "mqtt_broker",
+        "inputs": 0,
+        "x": 110,
+        "y": 240,
+        "wires": [
+            [
+                "json_parser"
+            ]
+        ]
+    },
+    {
+        "id": "json_parser",
+        "type": "json",
+        "z": "529bb9f9aacfeeed",
+        "name": "Parse JSON",
+        "property": "payload",
+        "action": "",
+        "pretty": false,
+        "x": 300,
+        "y": 240,
+        "wires": [
+            [
+                "split_payload"
+            ]
+        ]
+    },
+    {
+        "id": "split_payload",
+        "type": "function",
+        "z": "529bb9f9aacfeeed",
+        "name": "Split Sensor Data",
+        "func": "return [\n    { payload: msg.payload.DHT11_Temp },\n    { payload: msg.payload.DHT11_Hum },\n    { payload: msg.payload.DHT22_Temp },\n    { payload: msg.payload.DHT22_Hum },\n    { payload: msg.payload.Window_Status },\n    { payload: msg.payload.DHT22_Temp } // For heat index chart (optional)\n];",
+        "outputs": 6,
+        "noerr": 0,
+        "x": 500,
+        "y": 240,
+        "wires": [
+            [
+                "dht11_temp"
+            ],
+            [
+                "dht11_hum"
+            ],
+            [
+                "dht22_temp"
+            ],
+            [
+                "dht22_hum"
+            ],
+            [
+                "window_status"
+            ],
+            [
+                "heat_index_chart"
+            ]
+        ]
+    },
+    {
+        "id": "dht11_temp",
+        "type": "ui_gauge",
+        "z": "529bb9f9aacfeeed",
+        "name": "DHT11 Temperature",
+        "group": "sensor_readings",
+        "order": 1,
+        "width": 6,
+        "height": 4,
+        "gtype": "gage",
+        "title": "DHT11 Temperature (°C)",
+        "label": "°C",
+        "format": "{{value}}",
+        "min": 0,
+        "max": 60,
+        "x": 770,
+        "y": 180,
+        "wires": []
+    },
+    {
+        "id": "dht11_hum",
+        "type": "ui_gauge",
+        "z": "529bb9f9aacfeeed",
+        "name": "DHT11 Humidity",
+        "group": "sensor_readings",
+        "order": 2,
+        "width": 6,
+        "height": 4,
+        "gtype": "gage",
+        "title": "DHT11 Humidity (%)",
+        "label": "%",
+        "format": "{{value}}",
+        "min": 0,
+        "max": 100,
+        "x": 770,
+        "y": 240,
+        "wires": []
+    },
+    {
+        "id": "dht22_temp",
+        "type": "ui_gauge",
+        "z": "529bb9f9aacfeeed",
+        "name": "DHT22 Temperature",
+        "group": "sensor_readings",
+        "order": 3,
+        "width": 6,
+        "height": 4,
+        "gtype": "gage",
+        "title": "DHT22 Temperature (°C)",
+        "label": "°C",
+        "format": "{{value}}",
+        "min": 0,
+        "max": 60,
+        "x": 770,
+        "y": 300,
+        "wires": []
+    },
+    {
+        "id": "dht22_hum",
+        "type": "ui_gauge",
+        "z": "529bb9f9aacfeeed",
+        "name": "DHT22 Humidity",
+        "group": "sensor_readings",
+        "order": 4,
+        "width": 6,
+        "height": 4,
+        "gtype": "gage",
+        "title": "DHT22 Humidity (%)",
+        "label": "%",
+        "format": "{{value}}",
+        "min": 0,
+        "max": 100,
+        "x": 770,
+        "y": 360,
+        "wires": []
+    },
+    {
+        "id": "window_status",
+        "type": "ui_text",
+        "z": "529bb9f9aacfeeed",
+        "group": "sensor_readings",
+        "order": 5,
+        "width": 6,
+        "height": 1,
+        "name": "Window Status",
+        "label": "Window Status",
+        "format": "<b>{{msg.payload}}</b>",
+        "layout": "row-spread",
+        "x": 770,
+        "y": 420,
+        "wires": []
+    },
+    {
+        "id": "heat_index_chart",
+        "type": "ui_chart",
+        "z": "529bb9f9aacfeeed",
+        "name": "Heat Index Chart (DHT22 Temp)",
+        "group": "sensor_readings",
+        "order": 6,
+        "width": 12,
+        "height": 4,
+        "label": "DHT22 Temp Over Time",
+        "chartType": "line",
+        "legend": "false",
+        "xformat": "HH:mm:ss",
+        "interpolate": "linear",
+        "nodata": "",
+        "ymin": "0",
+        "ymax": "70",
+        "removeOlder": "10",
+        "removeOlderPoints": "",
+        "removeOlderUnit": "60",
+        "cutout": "0",
+        "useOneColor": true,
+        "colors": [
+            "#1f77b4"
+        ],
+        "outputs": 1,
+        "x": 770,
+        "y": 480,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "mqtt_input_alert",
+        "type": "mqtt in",
+        "z": "529bb9f9aacfeeed",
+        "name": "MQTT - Sensor Alert Monitor",
+        "topic": "esp32/sensors",
+        "qos": "2",
+        "datatype": "auto-detect",
+        "broker": "mqtt_broker",
+        "nl": false,
+        "rap": false,
+        "inputs": 0,
+        "x": 200,
+        "y": 780,
+        "wires": [
+            [
+                "json_parser_alert"
+            ]
+        ]
+    },
+    {
+        "id": "json_parser_alert",
+        "type": "json",
+        "z": "529bb9f9aacfeeed",
+        "name": "Parse Alert Payload",
+        "property": "payload",
+        "action": "",
+        "pretty": false,
+        "x": 400,
+        "y": 780,
+        "wires": [
+            [
+                "alert_function"
+            ]
+        ]
+    },
+    {
+        "id": "alert_function",
+        "type": "function",
+        "z": "529bb9f9aacfeeed",
+        "name": "Check for Alerts",
+        "func": "let hum = msg.payload.DHT22_Hum;\nlet hi = msg.payload.HeatIndex_DHT22 || 0;\n\nif (hum > 85 || hi > 32) {\n    msg.payload = `🚨 Warning: High ${hum > 85 ? 'Humidity' : 'Heat Index'}!`; \n} else {\n    msg.payload = \"Normal Conditions\";\n}\nreturn msg;",
+        "outputs": 1,
+        "timeout": "",
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 600,
+        "y": 780,
+        "wires": [
+            [
+                "alert_text"
+            ]
+        ]
+    },
+    {
+        "id": "alert_text",
+        "type": "ui_text",
+        "z": "529bb9f9aacfeeed",
+        "group": "forecast_group",
+        "order": 3,
+        "width": 12,
+        "height": 1,
+        "name": "Live Alert",
+        "label": "Live Alert",
+        "format": "<b>{{msg.payload}}</b>",
+        "layout": "row-spread",
+        "x": 800,
+        "y": 780,
+        "wires": []
+    },
+    {
+        "id": "inject_forecast_2w",
+        "type": "inject",
+        "z": "529bb9f9aacfeeed",
+        "name": "Fetch 2-Week Forecast",
+        "props": [],
+        "repeat": "600",
+        "crontab": "",
+        "once": true,
+        "onceDelay": 1,
+        "topic": "",
+        "x": 170,
+        "y": 860,
+        "wires": [
+            [
+                "http_forecast_2w"
+            ]
+        ]
+    },
+    {
+        "id": "http_forecast_2w",
+        "type": "http request",
+        "z": "529bb9f9aacfeeed",
+        "name": "GET /forecast",
+        "method": "GET",
+        "ret": "obj",
+        "url": "http://localhost:5001/forecast",
+        "x": 380,
+        "y": 860,
+        "wires": [
+            [
+                "func_format_forecast",
+                "func_forecast_alert"
+            ]
+        ]
+    },
+    {
+        "id": "func_format_forecast",
+        "type": "function",
+        "z": "529bb9f9aacfeeed",
+        "name": "Format Forecast for Chart",
+        "func": "let points = msg.payload.map(row => ({\n    x: row.timestamp,\n    y: row.DHT22_Hum_Forecast\n}));\n\nmsg.payload = [{\n    series: [\"DHT22_Hum_Forecast\"],\n    data: [points],\n    labels: points.map(p => p.x)\n}];\n\nreturn msg;",
+        "outputs": 1,
+        "timeout": "",
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 620,
+        "y": 840,
+        "wires": [
+            [
+                "chart_forecast_2w"
+            ]
+        ]
+    },
+    {
+        "id": "chart_forecast_2w",
+        "type": "ui_chart",
+        "z": "529bb9f9aacfeeed",
+        "name": "2-Week Humidity Forecast",
+        "group": "forecast_group",
+        "order": 4,
+        "width": 12,
+        "height": 5,
+        "label": "DHT22 Humidity Forecast (Next 2 Weeks)",
+        "chartType": "line",
+        "legend": "false",
+        "xformat": "Y-M-D",
+        "interpolate": "linear",
+        "nodata": "No forecast data",
+        "dot": false,
+        "ymin": "76.88",
+        "ymax": "76.93",
+        "removeOlder": "10",
+        "removeOlderPoints": "",
+        "removeOlderUnit": "3600",
+        "cutout": "0",
+        "useOneColor": true,
+        "useUTC": false,
+        "colors": [
+            "#1f77b4",
+            "#000000",
+            "#000000",
+            "#000000",
+            "#000000",
+            "#000000",
+            "#000000",
+            "#000000",
+            "#000000"
+        ],
+        "outputs": 1,
+        "useDifferentColor": false,
+        "className": "",
+        "x": 860,
+        "y": 840,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "func_forecast_alert",
+        "type": "function",
+        "z": "529bb9f9aacfeeed",
+        "name": "Forecast Alert",
+        "func": "let high = msg.payload.filter(p => p.DHT22_Hum_Forecast > 85);\nmsg.payload = high.length > 0\n  ? `⚠️ ${high.length} high humidity forecasts (>85%)`\n  : \"✅ Forecast looks normal\";\nreturn msg;",
+        "outputs": 1,
+        "timeout": "",
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 620,
+        "y": 880,
+        "wires": [
+            [
+                "text_forecast_alert"
+            ]
+        ]
+    },
+    {
+        "id": "text_forecast_alert",
+        "type": "ui_text",
+        "z": "529bb9f9aacfeeed",
+        "group": "forecast_group",
+        "order": 5,
+        "width": 12,
+        "height": 1,
+        "name": "Forecast Humidity Alert",
+        "label": "Forecast Alert",
+        "format": "<b>{{msg.payload}}</b>",
+        "layout": "row-spread",
+        "x": 860,
+        "y": 880,
+        "wires": []
+    },
+    {
+        "id": "humidity_image_node",
+        "type": "ui_template",
+        "z": "529bb9f9aacfeeed",
+        "group": "forecast_group",
+        "name": "Humidity Trend Image",
+        "order": 10,
+        "width": 12,
+        "height": 6,
+        "format": "<h3>Humidity Trend</h3>\n<img src=\"http://localhost:5001/humidity-trend-image\" style=\"width:100%; max-height:400px;\">",
+        "storeOutMessages": false,
+        "fwdInMessages": false,
+        "resendOnRefresh": true,
+        "templateScope": "local",
+        "x": 360,
+        "y": 920,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "image_hourly_patterns",
+        "type": "ui_template",
+        "z": "529bb9f9aacfeeed",
+        "group": "forecast_group",
+        "name": "Hourly Humidity Patterns",
+        "order": 20,
+        "width": 12,
+        "height": 6,
+        "format": "<h3>Hourly Humidity Patterns</h3>\n<img src=\"http://localhost:5001/hourly-humidity-patterns-image\" style=\"width:100%; max-height:400px;\">",
+        "storeOutMessages": false,
+        "fwdInMessages": false,
+        "resendOnRefresh": true,
+        "templateScope": "local",
+        "className": "",
+        "x": 350,
+        "y": 980,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "image_anomalies",
+        "type": "ui_template",
+        "z": "529bb9f9aacfeeed",
+        "group": "forecast_group",
+        "name": "Humidity Anomalies",
+        "order": 21,
+        "width": 12,
+        "height": 6,
+        "format": "<h3>Humidity Anomalies</h3>\n<img src=\"http://localhost:5001/humidity-anomalies-image\" style=\"width:100%; max-height:400px;\">",
+        "storeOutMessages": false,
+        "fwdInMessages": false,
+        "resendOnRefresh": true,
+        "templateScope": "local",
+        "x": 350,
+        "y": 1040,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "image_temporal_trends",
+        "type": "ui_template",
+        "z": "529bb9f9aacfeeed",
+        "group": "forecast_group",
+        "name": "Temporal Trends",
+        "order": 22,
+        "width": 12,
+        "height": 6,
+        "format": "<h3>Temporal Humidity Trends</h3>\n<img src=\"http://localhost:5001/temporal-trends-image\" style=\"width:100%; max-height:400px;\">",
+        "storeOutMessages": false,
+        "fwdInMessages": false,
+        "resendOnRefresh": true,
+        "templateScope": "local",
+        "x": 350,
+        "y": 1100,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "mqtt_broker",
+        "type": "mqtt-broker",
+        "name": "Mosquitto Broker",
+        "broker": "test.mosquitto.org",
+        "port": "1883",
+        "clientid": "",
+        "autoConnect": true,
+        "usetls": false,
+        "protocolVersion": 4,
+        "keepalive": "60",
+        "cleansession": true,
+        "autoUnsubscribe": true,
+        "birthTopic": "",
+        "birthQos": "0",
+        "birthPayload": "",
+        "birthMsg": {},
+        "closeTopic": "",
+        "closePayload": "",
+        "closeMsg": {},
+        "willTopic": "",
+        "willQos": "0",
+        "willPayload": "",
+        "willMsg": {},
+        "userProps": "",
+        "sessionExpiry": ""
+    },
+    {
+        "id": "sensor_readings",
+        "type": "ui_group",
+        "name": "Sensor Readings",
+        "tab": "dashboard_tab",
+        "order": 1,
+        "disp": true,
+        "width": "12",
+        "collapse": false
+    },
+    {
+        "id": "forecast_group",
+        "type": "ui_group",
+        "name": "Forecast & Alerts",
+        "tab": "forecast_tab",
+        "order": 1,
+        "disp": true,
+        "width": "12",
+        "collapse": false
+    },
+    {
+        "id": "dashboard_tab",
+        "type": "ui_tab",
+        "name": "EcoSphere Dashboard",
+        "icon": "dashboard",
+        "order": 1
+    },
+    {
+        "id": "forecast_tab",
+        "type": "ui_tab",
+        "name": "Anomaly & Forecast",
+        "icon": "timeline",
+        "order": 2
+    }
+]
