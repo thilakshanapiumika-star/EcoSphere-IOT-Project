@@ -8,7 +8,7 @@ app.use(express.json()); // Middleware for parsing JSON
 app.use(cors());
 
 // MongoDB Connection
-const mongoURI = "mongodb+srv://thilakshanapiumika:yMt3CfdGuElIYAxb@sensordht.zhpwycr.mongodb.net/?retryWrites=true&w=majority&appName=sensorDHT";
+const mongoURI = "";
 mongoose.connect(mongoURI, {
     useNewUrlParser: true,
     useUnifiedTopology: true,
